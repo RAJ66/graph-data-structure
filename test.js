@@ -66,6 +66,19 @@ describe("Graph", () => {
 			assert.equal(graph.adjacent({id: "a"})[0], "b");
 			output(graph, "ab");
 		});
+
+		it("Should implicitly add nodes when edges are added.", () => {
+			const graph = Graph();
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			assert.equal(graph.adjacent({id: "a"}).length, 1);
+			assert.equal(graph.adjacent({id: "a"})[0], "b");
+			assert.equal(graph.nodes().length, 2);
+			assert(contains(graph.nodes(), "a"));
+			assert(contains(graph.nodes(), "b"));
+		});
 	});
 });
 
