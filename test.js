@@ -88,10 +88,21 @@ describe("Graph", () => {
 			assert.equal(graph.adjacent({id: "a"}).length, 1);
 			assert.equal(graph.adjacent({id: "a"})[0], "b");
 		});
+
+		it("Should remove edges.", () => {
+			const graph = Graph();
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			graph.removeEdge({id: "a"}, {id: "b"});
+			assert.equal(graph.adjacent({id: "a"}).length, 0);
+		});
 	});
 });
 
 // TODO: Check params name
+// TODO: Remove node by node object id
 const contains = (arr, id) => {
 	return (
 		arr.filter((d) => {
