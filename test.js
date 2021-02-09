@@ -26,6 +26,15 @@ describe("Graph", () => {
 			assert(contains(graph.nodes(), "b"));
 			output(graph, "ab-nodes");
 		});
+
+		it("Should chain addNode.", function () {
+			var graph = Graph()
+				.addNode({id: "a", name: "I'm node a"})
+				.addNode({id: "b", name: "I'm node b"});
+			assert.equal(graph.nodes().length, 2);
+			assert(contains(graph.nodes(), "a"));
+			assert(contains(graph.nodes(), "b"));
+		});
 	});
 });
 
