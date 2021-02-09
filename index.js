@@ -94,7 +94,7 @@ function Graph(serialized) {
   function addEdge(u, v, weight) {
     addNode(u);
     addNode(v);
-    adjacent(u).push(v);
+    adjacent(u).push(v.id);
     if (weight !== undefined) {
       setEdgeWeight(u, v, weight);
     }
