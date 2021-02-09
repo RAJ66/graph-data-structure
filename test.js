@@ -20,7 +20,7 @@ describe("Graph", () => {
 		it("Should add nodes and list them.", () => {
 			const graph = Graph();
 			graph.addNode({id: "a", name: "I'm node a"});
-			graph.addNode({id: "a", name: "I'm node b"});
+			graph.addNode({id: "b", name: "I'm node b"});
 			assert.equal(graph.nodes().length, 2);
 			assert(contains(graph.nodes(), "a"));
 			assert(contains(graph.nodes(), "b"));
