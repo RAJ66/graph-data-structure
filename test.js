@@ -30,10 +30,10 @@ describe("Graph", () => {
 });
 
 // TODO: Check params name
-const contains = (arr, nodeId) => {
+const contains = (arr, id) => {
 	return (
 		arr.filter(function (d) {
-			return d.id === nodeId;
+			return d === id;
 		}).length > 0
 	);
 };
