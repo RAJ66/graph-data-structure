@@ -44,6 +44,15 @@ describe("Graph", () => {
 			graph.removeNode("b");
 			assert.equal(graph.nodes().length, 0);
 		});
+
+		it("Should chain removeNode.", function (){
+			var graph = Graph()
+			  .addNode({id: "a", name: "I'm node a"})
+			  .addNode({id: "b", name: "I'm node b"})
+			  .removeNode("a")
+			  .removeNode("b");
+			assert.equal(graph.nodes().length, 0);
+		  });
 	});
 });
 
