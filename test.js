@@ -98,6 +98,16 @@ describe("Graph", () => {
 			graph.removeEdge({id: "a"}, {id: "b"});
 			assert.equal(graph.adjacent({id: "a"}).length, 0);
 		});
+
+		it("Should chain removeEdge.", function () {
+			var graph = Graph()
+				.addEdge({id: "a", name: "I'm node a"}, {id: "b", name: "I'm node b"})
+				.removeEdge(
+					{id: "a", name: "I'm node a"},
+					{id: "b", name: "I'm node b"}
+				);
+			assert.equal(graph.adjacent({id: "a"}).length, 0);
+		});
 	});
 });
 
