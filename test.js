@@ -27,8 +27,8 @@ describe("Graph", () => {
 			output(graph, "ab-nodes");
 		});
 
-		it("Should chain addNode.", function () {
-			var graph = Graph()
+		it("Should chain addNode.", () => {
+			const graph = Graph()
 				.addNode({id: "a", name: "I'm node a"})
 				.addNode({id: "b", name: "I'm node b"});
 			assert.equal(graph.nodes().length, 2);
@@ -36,8 +36,8 @@ describe("Graph", () => {
 			assert(contains(graph.nodes(), "b"));
 		});
 
-		it("Should remove nodes.", function () {
-			var graph = Graph();
+		it("Should remove nodes.", () => {
+			const graph = Graph();
 			graph.addNode({id: "a", name: "I'm node a"});
 			graph.addNode({id: "b", name: "I'm node b"});
 			graph.removeNode("a");
@@ -45,21 +45,34 @@ describe("Graph", () => {
 			assert.equal(graph.nodes().length, 0);
 		});
 
-		it("Should chain removeNode.", function (){
-			var graph = Graph()
-			  .addNode({id: "a", name: "I'm node a"})
-			  .addNode({id: "b", name: "I'm node b"})
-			  .removeNode("a")
-			  .removeNode("b");
+		it("Should chain removeNode.", () => {
+			const graph = Graph()
+				.addNode({id: "a", name: "I'm node a"})
+				.addNode({id: "b", name: "I'm node b"})
+				.removeNode("a")
+				.removeNode("b");
 			assert.equal(graph.nodes().length, 0);
-		  });
+		});
+
+		it("Should add edges and query for adjacent nodes.", () => {
+			const graph = Graph();
+			graph.addNode({id: "a", name: "I'm node a"});
+			graph.addNode({id: "b", name: "I'm node b"});
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			assert.equal(graph.adjacent({id: "a"}).length, 1);
+			assert.equal(graph.adjacent({id: "a"})[0], "b");
+			output(graph, "ab");
+		});
 	});
 });
 
 // TODO: Check params name
 const contains = (arr, id) => {
 	return (
-		arr.filter(function (d) {
+		arr.filter((d) => {
 			return d === id;
 		}).length > 0
 	);
