@@ -79,6 +79,15 @@ describe("Graph", () => {
 			assert(contains(graph.nodes(), "a"));
 			assert(contains(graph.nodes(), "b"));
 		});
+
+		it("Should chain addEdge.", () => {
+			const graph = Graph().addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			assert.equal(graph.adjacent({id: "a"}).length, 1);
+			assert.equal(graph.adjacent({id: "a"})[0], "b");
+		});
 	});
 });
 
