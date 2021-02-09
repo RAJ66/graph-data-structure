@@ -35,6 +35,15 @@ describe("Graph", () => {
 			assert(contains(graph.nodes(), "a"));
 			assert(contains(graph.nodes(), "b"));
 		});
+
+		it("Should remove nodes.", function () {
+			var graph = Graph();
+			graph.addNode({id: "a", name: "I'm node a"});
+			graph.addNode({id: "b", name: "I'm node b"});
+			graph.removeNode("a");
+			graph.removeNode("b");
+			assert.equal(graph.nodes().length, 0);
+		});
 	});
 });
 
