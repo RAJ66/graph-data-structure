@@ -104,9 +104,9 @@ function Graph(serialized) {
   // Does not remove the nodes.
   // Does nothing if the edge does not exist.
   function removeEdge(u, v) {
-    if (edges[u]) {
-      edges[u] = adjacent(u).filter(function (_v) {
-        return _v !== v;
+    if (edges[u.id]) {
+      edges[u.id] = adjacent(u).filter(function (_v) {
+        return _v !== v.id;
       });
     }
     return graph;
