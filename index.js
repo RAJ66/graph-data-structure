@@ -46,8 +46,8 @@ function Graph(serialized) {
     // Remove incoming edges.
     Object.keys(edges).forEach(function (u) {
       edges[u].forEach(function (v) {
-        if (v === node) {
-          removeEdge(u, v);
+        if (v.id === node) {
+          removeEdge(u, v.id);
         }
       });
     });
