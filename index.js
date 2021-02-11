@@ -150,7 +150,7 @@ function Graph(serialized) {
     function DFSVisit(node) {
       if (!visited[node]) {
         visited[node] = true;
-        adjacent(node).forEach(DFSVisit);
+        adjacent({ id: node }).forEach(DFSVisit);
         nodeList.push(node);
       }
     }
@@ -161,7 +161,7 @@ function Graph(serialized) {
         visited[node] = true;
       });
       sourceNodes.forEach(function (node) {
-        adjacent(node).forEach(DFSVisit);
+        adjacent({ id: node }).forEach(DFSVisit);
       });
     }
     return nodeList;
