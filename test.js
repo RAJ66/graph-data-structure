@@ -108,6 +108,15 @@ describe("Graph", () => {
 				);
 			assert.equal(graph.adjacent({id: "a"}).length, 0);
 		});
+
+		it("Should not remove nodes when edges are removed.", function (){
+			var graph = Graph();
+			graph.addEdge({id: "a", name: "I'm node a"}, {id: "b", name: "I'm node b"});
+			graph.removeEdge({id: "a"}, {id: "b"});
+			assert.equal(graph.nodes().length, 2);
+			assert(contains(graph.nodes(), "a"));
+			assert(contains(graph.nodes(), "b"));
+		  });
 	});
 });
 
