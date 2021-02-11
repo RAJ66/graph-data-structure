@@ -141,8 +141,8 @@ describe("Graph", () => {
 			assert.equal(graph.adjacent({id: "a"}).length, 0);
 		});
 
-		it("Should compute indegree.", function () {
-			var graph = Graph();
+		it("Should compute indegree.", () => {
+			const graph = Graph();
 			graph.addEdge(
 				{id: "a", name: "I'm node a"},
 				{id: "b", name: "I'm node b"}
@@ -157,8 +157,8 @@ describe("Graph", () => {
 			assert.equal(graph.indegree("b"), 2);
 		});
 
-		it("Should compute outdegree.", function () {
-			var graph = Graph();
+		it("Should compute outdegree.", () => {
+			const graph = Graph();
 			graph.addEdge(
 				{id: "a", name: "I'm node a"},
 				{id: "b", name: "I'm node b"}
