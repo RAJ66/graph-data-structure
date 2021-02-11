@@ -130,6 +130,16 @@ describe("Graph", () => {
 			graph.removeNode("a");
 			assert.equal(graph.adjacent({id: "a"}).length, 0);
 		});
+
+		it("Should remove incoming edges when a node is removed.", () => {
+			const graph = Graph();
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			graph.removeNode("b");
+			assert.equal(graph.adjacent({id: "a"}).length, 0);
+		});
 	});
 });
 
