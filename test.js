@@ -215,7 +215,6 @@ describe("Graph", () => {
 			);
 
 			const sorted = graph.topologicalSort();
-			console.log("...", sorted);
 			assert(comesBefore(sorted, "pants", "shoes"));
 			assert(comesBefore(sorted, "underpants", "pants"));
 			assert(comesBefore(sorted, "underpants", "shoes"));
@@ -226,6 +225,23 @@ describe("Graph", () => {
 			assert.equal(sorted.length, 8);
 
 			output(graph, "getting-dressed");
+		});
+
+		it("Should compute topological sort, excluding source nodes.", () => {
+			const graph = Graph();
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			graph.addEdge(
+				{id: "b", name: "I'm node b"},
+				{id: "c", name: "I'm node c"}
+			);
+			const sorted = graph.topologicalSort(["a"], false);
+			assert.equal(sorted.length, 2);
+			assert.equal(sorted[0], "b");
+			assert.equal(sorted[1], "c");
+			output(graph, "abc");
 		});
 	});
 });
