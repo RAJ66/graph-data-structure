@@ -140,11 +140,28 @@ describe("Graph", () => {
 			graph.removeNode("b");
 			assert.equal(graph.adjacent({id: "a"}).length, 0);
 		});
+
+		it("Should compute indegree.", function () {
+			var graph = Graph();
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			assert.equal(graph.indegree("a"), 0);
+			assert.equal(graph.indegree("b"), 1);
+
+			graph.addEdge(
+				{id: "c", name: "I'm node c"},
+				{id: "b", name: "I'm node b"}
+			);
+			assert.equal(graph.indegree("b"), 2);
+		});
 	});
 });
 
 // TODO: Check params name
 // TODO: Remove node by node object id
+// TODO: Check method indegree
 const contains = (arr, id) => {
 	return (
 		arr.filter((d) => {
