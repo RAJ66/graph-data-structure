@@ -173,6 +173,61 @@ describe("Graph", () => {
 			assert.equal(graph.outdegree("a"), 2);
 		});
 	});
+
+	describe("Algorithms", () => {
+		// This example is from Cormen et al. "Introduction to Algorithms" page 550
+		it("Should compute topological sort.", () => {
+			const graph = Graph();
+
+			// Shoes depend on socks.
+			// Socks need to be put on before shoes.
+			graph.addEdge(
+				{id: "socks", name: "I'm socks", size: 1},
+				{id: "shoes", name: "I'm shoes", size: 10}
+			);
+			graph.addEdge(
+				{id: "shirt", name: "I'm shirt", size: 2},
+				{id: "belt", name: "I'm belt"}
+			);
+			graph.addEdge(
+				{id: "shirt", name: "I'm shirt", size: 1},
+				{id: "tie", name: "I'm tie"}
+			);
+			graph.addEdge(
+				{id: "tie", name: "I'm tie"},
+				{id: "jacket", name: "I'm jacket", size: 4}
+			);
+			graph.addEdge(
+				{id: "belt", name: "I'm belt"},
+				{id: "jacket", name: "I'm jacket", size: 4}
+			);
+			graph.addEdge(
+				{id: "pants", name: "I'm pants"},
+				{id: "shoes", name: "I'm shoes", size: 10}
+			);
+			graph.addEdge(
+				{id: "underpants", name: "I'm underpants"},
+				{id: "pants", name: "I'm pants"}
+			);
+			graph.addEdge(
+				{id: "pants", name: "I'm pants"},
+				{id: "belt", name: "I'm belt"}
+			);
+
+			const sorted = graph.topologicalSort();
+			console.log("...", sorted);
+			assert(comesBefore(sorted, "pants", "shoes"));
+			assert(comesBefore(sorted, "underpants", "pants"));
+			assert(comesBefore(sorted, "underpants", "shoes"));
+			assert(comesBefore(sorted, "shirt", "jacket"));
+			assert(comesBefore(sorted, "shirt", "belt"));
+			assert(comesBefore(sorted, "belt", "jacket"));
+
+			assert.equal(sorted.length, 8);
+
+			output(graph, "getting-dressed");
+		});
+	});
 });
 
 // TODO: Check params name
@@ -185,3 +240,16 @@ const contains = (arr, id) => {
 		}).length > 0
 	);
 };
+
+function comesBefore(arr, a, b) {
+	var aIndex, bIndex;
+	arr.forEach(function (d, i) {
+		if (d === a) {
+			aIndex = i;
+		}
+		if (d === b) {
+			bIndex = i;
+		}
+	});
+	return aIndex < bIndex;
+}
