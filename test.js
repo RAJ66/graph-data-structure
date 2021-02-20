@@ -1,5 +1,6 @@
 // Unit tests for reactive-property.
 const assert = require("assert");
+const {serialize} = require("v8");
 
 // If using from the NPM package, this line would be
 // var Graph = require("graph-data-structure");
@@ -242,6 +243,179 @@ describe("Graph", () => {
 			assert.equal(sorted[0], "b");
 			assert.equal(sorted[1], "c");
 			output(graph, "abc");
+		});
+
+		it("Should compute topological sort tricky case.", () => {
+			const graph = Graph();
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "b", name: "I'm node b"}
+			);
+			graph.addEdge(
+				{id: "a", name: "I'm node a"},
+				{id: "d", name: "I'm node d"}
+			);
+			graph.addEdge(
+				{id: "b", name: "I'm node b"},
+				{id: "c", name: "I'm node c"}
+			);
+			graph.addEdge(
+				{id: "d", name: "I'm node d"},
+				{id: "e", name: "I'm node e"}
+			);
+			graph.addEdge(
+				{id: "c", name: "I'm node c"},
+				{id: "e", name: "I'm node e"}
+			);
+
+			const sorted = graph.topologicalSort(["a"], false);
+			assert.equal(sorted.length, 4);
+			assert(contains(sorted, "b"));
+			assert(contains(sorted, "c"));
+			assert(contains(sorted, "d"));
+			assert.equal(sorted[sorted.length - 1], "e");
+
+			assert(comesBefore(sorted, "b", "c"));
+			assert(comesBefore(sorted, "b", "e"));
+			assert(comesBefore(sorted, "c", "e"));
+			assert(comesBefore(sorted, "d", "e"));
+
+			output(graph, "tricky-case");
+		});
+
+		it("Should exclude source nodes with a cycle.", () => {
+			const graph = Graph()
+				.addEdge({id: "a", name: "I'm node a"}, {id: "b", name: "I'm node b"})
+				.addEdge({id: "b", name: "I'm node b"}, {id: "c", name: "I'm node c"})
+				.addEdge({id: "c", name: "I'm node c"}, {id: "a", name: "I'm node a"});
+			const sorted = graph.topologicalSort(["a"], false);
+			assert.equal(sorted.length, 2);
+			assert.equal(sorted[0], "b");
+			assert.equal(sorted[1], "c");
+
+			output(graph, "cycle");
+		});
+
+		it("Should exclude source nodes with multiple cycles.", () => {
+			const graph = Graph()
+				.addEdge({id: "a", name: "I'm node a"}, {id: "b", name: "I'm node b"})
+				.addEdge({id: "b", name: "I'm node b"}, {id: "a", name: "I'm node a"})
+				.addEdge({id: "b", name: "I'm node b"}, {id: "c", name: "I'm node c"})
+				.addEdge({id: "c", name: "I'm node c"}, {id: "b", name: "I'm node b"})
+				.addEdge({id: "a", name: "I'm node a"}, {id: "c", name: "I'm node c"})
+				.addEdge({id: "c", name: "I'm node c"}, {id: "a", name: "I'm node a"});
+
+			const sorted = graph.topologicalSort(["a", "b"], false);
+			assert(!contains(sorted, "b"));
+
+			output(graph, "cycles");
+		});
+
+		it("Should compute lowest common ancestors.", () => {
+			const graph = Graph()
+				.addEdge({id: "a", name: "I'm node a"}, {id: "b", name: "I'm node b"})
+				.addEdge({id: "b", name: "I'm node b"}, {id: "d", name: "I'm node d"})
+				.addEdge({id: "c", name: "I'm node c"}, {id: "d", name: "I'm node d"})
+				.addEdge({id: "b", name: "I'm node b"}, {id: "e", name: "I'm node e"})
+				.addEdge({id: "c", name: "I'm node c"}, {id: "e", name: "I'm node e"})
+				.addEdge({id: "d", name: "I'm node d"}, {id: "g", name: "I'm node g"})
+				.addEdge({id: "e", name: "I'm node e"}, {id: "g", name: "I'm node g"})
+				.addNode({id: "f", name: "I'm node f"});
+
+			assert.deepStrictEqual(graph.lowestCommonAncestors("a", "a"), ["a"]);
+			assert.deepStrictEqual(graph.lowestCommonAncestors("a", "b"), ["b"]);
+			assert.deepStrictEqual(graph.lowestCommonAncestors("a", "c"), ["d", "e"]);
+			assert.deepStrictEqual(graph.lowestCommonAncestors("a", "f"), []);
+		});
+	});
+
+	describe("Edge cases and error handling", () => {
+		it("Should return empty array of adjacent nodes for unknown nodes.", () => {
+			const graph = Graph();
+			assert.equal(graph.adjacent({id: "a"}).length, 0);
+			assert.equal(graph.nodes(), 0);
+		});
+
+		it("Should do nothing if removing an edge that does not exist.", () => {
+			assert.doesNotThrow(function () {
+				const graph = Graph();
+				graph.removeEdge({id: "a"}, {id: "b"});
+			});
+		});
+
+		it("Should return indegree of 0 for unknown nodes.", () => {
+			const graph = Graph();
+			assert.equal(graph.indegree("z"), 0);
+		});
+
+		it("Should return outdegree of 0 for unknown nodes.", () => {
+			const graph = Graph();
+			assert.equal(graph.outdegree("z"), 0);
+		});
+	});
+
+	describe("Serialization", () => {
+		let serialized;
+
+		const checkSerialized = (graph) => {
+			assert.equal(graph.nodes.length, 3);
+			assert.equal(graph.links.length, 2);
+
+			assert.equal(graph.nodes[0].id, "a");
+			assert.equal(graph.nodes[1].id, "b");
+			assert.equal(graph.nodes[2].id, "c");
+
+			assert.equal(graph.links[0].source, "a");
+			assert.equal(graph.links[0].target, "b");
+			assert.equal(graph.links[1].source, "b");
+			assert.equal(graph.links[1].target, "c");
+		};
+
+		it("Should serialize a graph.", () => {
+			const graph = Graph()
+				.addEdge({id: "a", name: "I'm node a"}, {id: "b", name: "I'm node b"})
+				.addEdge({id: "b", name: "I'm node b"}, {id: "c", name: "I'm node c"});
+			serialized = graph.serialize();
+			checkSerialized(serialized);
+		});
+
+		it("Should deserialize a graph.", () => {
+			const graph = Graph();
+			graph.deserialize(serialized);
+			checkSerialized(graph.serialize());
+		});
+
+		it("Should chain deserialize a graph.", () => {
+			const graph = Graph().deserialize(serialized);
+			checkSerialized(graph.serialize());
+		});
+
+		it("Should deserialize a graph passed to constructor.", () => {
+			const graph = Graph(serialized);
+			checkSerialized(graph.serialize());
+		});
+	});
+
+	describe("Edge Weights", () => {
+		it("Should set and get an edge weight.", () => {
+			const graph = Graph().addEdge(
+				{id: "a", name: "A"},
+				{id: "b", name: "B"},
+				5
+			);
+			assert.equal(graph.getEdgeWeight("a", "b"), 5);
+		});
+
+		it("Should set edge weight via setEdgeWeight.", () => {
+			const graph = Graph()
+				.addEdge({id: "a", name: "A"}, {id: "b", name: "B"})
+				.setEdgeWeight("a", "b", 5);
+			assert.equal(graph.getEdgeWeight("a", "b"), 5);
+		});
+
+		it("Should return weight of 1 if no weight set.", () => {
+			const graph = Graph().addEdge({id: "a", name: "A"}, {id: "b", name: "B"});
+			assert.equal(graph.getEdgeWeight("a", "b"), 1);
 		});
 	});
 });

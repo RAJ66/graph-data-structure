@@ -96,7 +96,7 @@ function Graph(serialized) {
     addNode(v);
     adjacent(u).push(v.id);
     if (weight !== undefined) {
-      setEdgeWeight(u, v, weight);
+      setEdgeWeight(u.id, v.id, weight);
     }
     return graph;
   }
@@ -180,7 +180,8 @@ function Graph(serialized) {
           lcas.push(node);
           return false; // found - shortcut
         }
-        return adjacent(node).every(function (node) {
+        //TODO: Change param name
+        return adjacent({id: node}).every(function (node) {
           return CA1Visit(visited, node);
         });
       } else {
@@ -193,7 +194,8 @@ function Graph(serialized) {
         if (node1Ancestors.indexOf(node) >= 0) {
           lcas.push(node);
         } else if (lcas.length == 0) {
-          adjacent(node).forEach(function (node) {
+          //TODO: Change param name
+          adjacent({id: node}).forEach(function (node) {
             CA2Visit(visited, node);
           });
         }
@@ -311,15 +313,15 @@ function Graph(serialized) {
   }
   // Serializes the graph.
   function serialize() {
-    var serialized = {
-      nodes: nodes().map(function (id) {
-        return { id: id };
+    const serialized = {
+      nodes: nodes().map((id) => {
+        return {id};
       }),
       links: [],
     };
-    serialized.nodes.forEach(function (node) {
-      var source = node.id;
-      adjacent(source).forEach(function (target) {
+    serialized.nodes.forEach((node) => {
+      const source = node.id;
+      adjacent({id: source}).forEach((target) => {
         serialized.links.push({
           source: source,
           target: target,
@@ -331,11 +333,11 @@ function Graph(serialized) {
   }
   // Deserializes the given serialized graph.
   function deserialize(serialized) {
-    serialized.nodes.forEach(function (node) {
-      addNode(node.id);
+    serialized.nodes.forEach((node) => {
+      addNode(node);
     });
-    serialized.links.forEach(function (link) {
-      addEdge(link.source, link.target, link.weight);
+    serialized.links.forEach((link) =>{
+      addEdge({id: link.source}, {id: link.target}, link.weight);
     });
     return graph;
   }
